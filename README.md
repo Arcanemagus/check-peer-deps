@@ -27,9 +27,9 @@ then there will be no output, otherwise you will see something similar to this:
 
 ```
   > check-peer-deps
-  A [dev]Dependency satisfying eslint-config-airbnb-base's peerDependency of 'eslint@^4.9.0' was not found!
+  A dependency satisfying eslint-config-airbnb-base's peerDependency of 'eslint@^4.9.0' was not found!
   Current: eslint@^4.6.0
-  Required version is allowed? Yes
+  Package dependencies can satisfy the peerDependency? Yes
 ```
 
 This tells you that `eslint-config-airbnb-base` is requiring `eslint@^4.9.0` as
