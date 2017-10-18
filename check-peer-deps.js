@@ -126,13 +126,13 @@ const checkPeerDependencies = async (peerDependencies, name) =>
     }
 
     if (!found) {
-      console.error(`A ${INCLUDE_DEV ? '[dev]D' : 'd'}ependency satisfying ${name}'s peerDependency of '${peerDepName}@${peerDepRange}' was not found!`);
+      console.error(`A dependency satisfying ${name}'s peerDependency of '${peerDepName}@${peerDepRange}' was not found!`);
 
       if (deps.has(peerDepName)) {
         console.log(`Current: ${peerDepName}@${deps.get(peerDepName)}`);
         const { versions } = npmVers.get(peerDepName);
-        const maxUsabe = semver.maxSatisfying(versions, peerDepRange);
-        console.log(`Required version is allowed? ${maxUsabe ? 'Yes' : 'No'}`);
+        const maxUsable = semver.maxSatisfying(versions, peerDepRange);
+        console.log(`Package dependencies can satisfy the peerDependency? ${maxUsable ? 'Yes' : 'No'}`);
       }
     }
   }));
