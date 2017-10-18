@@ -7,6 +7,7 @@
   "keywords": [
     "peerDependencies"
   ],
+  "preferGlobal": true,
   "main": "check-peer-deps.js",
   "bin": {
     "check-peer-deps": "./bin/check-peer-deps-cli.js"
