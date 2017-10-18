@@ -7,8 +7,6 @@ const DEBUG = false;
 // Include development packages when checking whether a peerDependency has been
 // satisfied.
 const INCLUDE_DEV = true;
-// Use the local package.json files or check NPM to determine the peerDependencies
-const USE_LOCAL_PEERDEPS = true;
 
 // Internal vars
 const deps = new Map();
@@ -52,29 +50,33 @@ const getNpmVersions = async () => {
 
   // Grab the versions from NPM
   return Promise.all(Array.from(toCheck.values()).map(async (name) => {
-    if (deps.has(name)) {
+    if (deps.has(name) && !npmVers.has(name)) {
       await gatherNpmVer(deps.get(name), name);
     }
   }));
 };
 
-// Get the peerDependencies
-const getNpmPeerDep = async (range, name) => {
-  log(`Getting peerDependencies for ${name}`);
-  const opts = ['view', '--json', name, 'peerDependencies'];
-  const npmPeerDeps = JSON.parse(await exec('npm', opts));
+const addPeerDeps = (name, peerDependencies) => {
   if (!peerDeps.has(name)) {
     peerDeps.set(name, new Map());
   }
   const currDeps = peerDeps.get(name);
-  Object.entries(npmPeerDeps).forEach((entry) => {
+  Object.entries(peerDependencies).forEach((entry) => {
     const [depName, depRange] = entry;
-    log(`${depName}@${depRange}`);
+    log(`${name} peerDependency: ${depName}@${depRange}`);
     currDeps.set(depName, depRange);
   });
 };
 
-const getLocalPeerDep = async (range, name) => {
+// Get the peerDependencies
+const getNpmPeerDep = async (range, name) => {
+  log(`Getting NPM peerDependencies for ${name}`);
+  const opts = ['view', '--json', name, 'peerDependencies'];
+  const npmPeerDeps = JSON.parse(await exec('npm', opts));
+  addPeerDeps(name, npmPeerDeps);
+};
+
+const getPeerDep = async (range, name) => {
   log(`Getting peerDependencies for ${name}`);
   let packageInfo;
   try {
@@ -87,30 +89,24 @@ const getLocalPeerDep = async (range, name) => {
   if (!packageInfo.peerDependencies) {
     return;
   }
-  if (!peerDeps.has(name)) {
-    peerDeps.set(name, new Map());
+
+  if (!npmVers.has(name)) {
+    await gatherNpmVer(range, name);
   }
-  const currDeps = peerDeps.get(name);
-  Object.entries(packageInfo.peerDependencies).forEach((entry) => {
-    const [depName, depRange] = entry;
-    log(`${depName}@${depRange}`);
-    currDeps.set(depName, depRange);
-  });
+  if (semver.lt(packageInfo.version, npmVers.get(name).maximum)) {
+    // The installed version isn't the highest allowed, check the latest from NPM
+    log(`${name}: Installed version lower than allowed version. Using NPM to determine peerDependencies.`);
+    await getNpmPeerDep(range, name);
+  } else {
+    log(`${name}: Using local package.json's to determine peerDependencies.`);
+    addPeerDeps(name, packageInfo.peerDependencies);
+  }
 };
 
 const getPeerDeps = async () => {
   const promises = [];
-  if (USE_LOCAL_PEERDEPS) {
-    log("Using local package.json's to determine peerDependencies.");
-  } else {
-    log('Using NPM to determine peerDependencies.');
-  }
   deps.forEach((range, name) => {
-    if (USE_LOCAL_PEERDEPS) {
-      promises.push(getLocalPeerDep(range, name));
-    } else {
-      promises.push(getNpmPeerDep(range, name));
-    }
+    promises.push(getPeerDep(range, name));
   });
   return Promise.all(promises);
 };
@@ -167,14 +163,20 @@ async function checkPeerDeps() {
   log('Dependencies:');
   deps.forEach((range, name) => { log(`${name}: ${range}`); });
 
+  log('');
+
   log('Determining peerDependencies...');
   await getPeerDeps();
   log('Done.');
 
+  log('');
+
   // Get the NPM versions required to check the peerDependencies
-  log('Determining version ranges from NPM...');
+  log('Determining peerDependency version ranges from NPM...');
   await getNpmVersions();
   log('Done.');
+
+  log('');
 
   log('Checking versions...');
   await checkAllPeerDeps();
