@@ -7,7 +7,7 @@ are satisfied.
 You can install this on your system with a simple:
 
 ```sh
-npm install check-peer-deps
+npx check-peer-deps
 ```
 
 Please note that this utility requires `npm` to be available.
