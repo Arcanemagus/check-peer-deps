@@ -1,0 +1,37 @@
+{
+  "name": "check-peer-deps",
+  "version": "1.0.0",
+  "description": "Verifies that the peerDependency requirements of all top level dependencies are satisfied.",
+  "author": "Landon Abney <landonabney@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "peerDependencies"
+  ],
+  "main": "check-peer-deps.js",
+  "bin": {
+    "check-peer-deps": "./bin/check-peer-deps-cli.js"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "sb-exec": "^4.0.0",
+    "semver": "^5.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0"
+  },
+  "eslintConfig": {
+    "extends": "airbnb-base",
+    "rules": {
+      "global-require": "off",
+      "no-console": "off"
+    },
+    "env": {
+      "node": true
+    }
+  }
+}
