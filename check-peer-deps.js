@@ -7,6 +7,8 @@ const DEBUG = false;
 // Include development packages when checking whether a peerDependency has been
 // satisfied.
 const INCLUDE_DEV = true;
+// Maximum allowed retries for npm commands
+const MAX_RETRIES = 2;
 
 // Internal vars
 const deps = new Map();
@@ -26,10 +28,31 @@ const addDeps = (dependencies) => {
   });
 };
 
+const npmView = async (name, keys) => {
+  const opts = ['view', '--json', name].concat(keys);
+  log(`Running 'npm ${opts.join(' ')}'`);
+  let remainingTries = MAX_RETRIES;
+  let output;
+  do {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      output = await exec('npm', opts);
+    } catch (e) {
+      log(`'npm ${opts.join(' ')}' failed, retrying...`);
+      // Do nothing when it fails...
+    }
+    remainingTries -= 1;
+  } while (remainingTries > 0 && !output);
+  if (!output) {
+    console.error(`To many retries of 'npm ${opts.join(' ')}' without success, exiting!`);
+    process.exit(1);
+  }
+  return JSON.parse(output);
+};
+
 const gatherNpmVer = async (range, name) => {
   log(`Getting versions for ${name}@${range}...`);
-  const opts = ['view', '--json', name, 'versions'];
-  const versions = JSON.parse(await exec('npm', opts));
+  const versions = await npmView(name, 'versions');
   const ranges = {
     versions,
     minimum: semver.minSatisfying(versions, range),
@@ -71,8 +94,7 @@ const addPeerDeps = (name, peerDependencies) => {
 // Get the peerDependencies
 const getNpmPeerDep = async (range, name) => {
   log(`Getting NPM peerDependencies for ${name}`);
-  const opts = ['view', '--json', name, 'peerDependencies'];
-  const npmPeerDeps = JSON.parse(await exec('npm', opts));
+  const npmPeerDeps = await npmView(name, 'peerDependencies');
   addPeerDeps(name, npmPeerDeps);
 };
 
