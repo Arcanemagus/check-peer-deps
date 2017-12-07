@@ -24,6 +24,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "command-line-args": "^4.0.7",
     "sb-exec": "^4.0.0",
     "semver": "^5.4.1"
   },

@@ -1,14 +1,15 @@
 const { exec } = require('sb-exec');
 const semver = require('semver');
+const commandLineArgs = require('command-line-args');
 
 // Flags
 // Enable debug output
-const DEBUG = false;
+let DEBUG = false;
 // Include development packages when checking whether a peerDependency has been
 // satisfied.
-const INCLUDE_DEV = true;
+let INCLUDE_DEV = false;
 // Maximum allowed retries for npm commands
-const MAX_RETRIES = 2;
+let MAX_RETRIES = 2;
 
 // Internal vars
 const deps = new Map();
@@ -169,6 +170,16 @@ const checkAllPeerDeps = async () => {
 
 // Main function
 async function checkPeerDeps() {
+  const opts = commandLineArgs([
+    { name: 'debug', alias: 'd', type: Boolean },
+    { name: 'include-dev', alias: 'D', type: Boolean },
+    { name: 'max-retries', type: Number }
+  ]);
+
+  DEBUG = opts['debug'] ? opts['debug'] : false;
+  MAX_RETRIES = opts['max-retries'] ? opts['max-retries'] : 2;
+  INCLUDE_DEV = opts['include-dev'] ? opts['include-dev'] : false;
+
   // eslint-disable-next-line import/no-dynamic-require
   const packageConfig = require(`${process.cwd()}/package.json`);
   if (!packageConfig.dependencies) {
