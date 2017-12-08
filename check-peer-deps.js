@@ -230,6 +230,7 @@ async function checkPeerDeps() {
 
   if (opts['help']) {
     console.log(commandLineUsage(usageSections));
+    process.exit(0);
   }
 
   // eslint-disable-next-line import/no-dynamic-require
