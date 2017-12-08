@@ -12,6 +12,47 @@ let INCLUDE_DEV;
 // Maximum allowed retries for npm commands
 let MAX_RETRIES;
 
+const optionDefinitions = [
+  {
+    name: 'help',
+    description: 'Show this help',
+    type: Boolean,
+    alias: 'h',
+  },
+  {
+    name: 'debug',
+    description: 'Enable debug information',
+    type: Boolean,
+    alias: 'd',
+    defaultValue: false,
+  },
+  {
+    name: 'no-include-dev',
+    description: "Don't include development packages when checking whether a " +
+      'peerDependency has been satisfied',
+    defaultValue: false,
+  },
+  {
+    name: 'max-retries',
+    description: 'Specify how many retries are allowed for [underline]{npm} commands',
+    type: Number,
+    typeLabel: '[underline]{retries}',
+    defaultValue: 2,
+  },
+];
+
+const usageSections = [
+  {
+    header: 'check-peer-deps',
+    content: 'Verifies that the peerDependency requirements of all top level ' +
+      'dependencies are satisfied.',
+  },
+  {
+    header: 'Options',
+    optionList: optionDefinitions,
+  },
+];
+
 // Internal vars
 const deps = new Map();
 const npmVers = new Map();
@@ -174,12 +215,7 @@ const setOpts = () => {
   const NO_INCLUDE_DEV_DEFAULT = false;
   const MAX_RETRIES_DEFAULT = 2;
 
-  const opts = commandLineArgs([
-    { name: 'debug', alias: 'd', type: Boolean, defaultValue: DEBUG_DEFAULT },
-    { name: 'no-include-dev', type: Boolean, defaultValue: NO_INCLUDE_DEV_DEFAULT },
-    { name: 'max-retries', type: Number, defaultValue: MAX_RETRIES_DEFAULT },
-    { name: 'help', alias: 'h', type: Boolean }
-  ]);
+  const opts = commandLineArgs(optionDefinitions);
 
   DEBUG = opts['debug'] ? opts['debug'] : DEBUG_DEFAULT;
   INCLUDE_DEV = opts['no-include-dev'] ? !opts['no-include-dev'] : !NO_INCLUDE_DEV_DEFAULT;
@@ -193,7 +229,7 @@ async function checkPeerDeps() {
   const opts = setOpts();
 
   if (opts['help']) {
-    console.log(commandLineUsage(require('./option-descriptions')));
+    console.log(commandLineUsage(usageSections));
   }
 
   // eslint-disable-next-line import/no-dynamic-require
