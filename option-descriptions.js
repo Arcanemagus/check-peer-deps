@@ -1,7 +1,7 @@
 module.exports = [
   {
     header: 'Check peer deps',
-    content: 'Checks peer dependencies'
+    content: 'Verifies that the peerDependency requirements of all top level dependencies are satisfied'
   }, {
     header: 'Options',
     optionList: [
