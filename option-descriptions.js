@@ -16,14 +16,13 @@ module.exports = [
         alias: 'd',
         type: Boolean
       }, {
-        name: '-no-include-dev',
+        name: 'no-include-dev',
         description: 'Avoid including dev dependencies in the check',
       }, {
         name: 'max-retries',
         description: 'Specify how many retries are allowed',
         type: Number,
-        typeLabel: '[underline]{retries}',
-        defaultOption: 2
+        typeLabel: '[underline]{retries}'
       }
     ]
   }

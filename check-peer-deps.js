@@ -5,12 +5,12 @@ const commandLineUsage =  require('command-line-usage');
 
 // Flags
 // Enable debug output
-let DEBUG = false;
+let DEBUG;
 // Include development packages when checking whether a peerDependency has been
 // satisfied.
-let INCLUDE_DEV = true;
+let INCLUDE_DEV;
 // Maximum allowed retries for npm commands
-let MAX_RETRIES = 2;
+let MAX_RETRIES;
 
 // Internal vars
 const deps = new Map();
@@ -170,16 +170,20 @@ const checkAllPeerDeps = async () => {
 };
 
 const setOpts = () => {
+  const DEBUG_DEFAULT = false;
+  const NO_INCLUDE_DEV_DEFAULT = false;
+  const MAX_RETRIES_DEFAULT = 2;
+
   const opts = commandLineArgs([
-    { name: 'debug', alias: 'd', type: Boolean },
-    { name: 'no-include-dev', type: Boolean },
-    { name: 'max-retries', type: Number },
-    { name: 'help', alias: 'h', type: Boolean, defaultValue: false }
+    { name: 'debug', alias: 'd', type: Boolean, defaultValue: DEBUG_DEFAULT },
+    { name: 'no-include-dev', type: Boolean, defaultValue: NO_INCLUDE_DEV_DEFAULT },
+    { name: 'max-retries', type: Number, defaultValue: MAX_RETRIES_DEFAULT },
+    { name: 'help', alias: 'h', type: Boolean }
   ]);
 
-  DEBUG = opts['debug'] ? opts['debug'] : false;
-  MAX_RETRIES = opts['max-retries'] ? opts['max-retries'] : 2;
-  INCLUDE_DEV = opts['no-include-dev'] ? opts['no-include-dev'] : true;
+  DEBUG = opts['debug'] ? opts['debug'] : DEBUG_DEFAULT;
+  INCLUDE_DEV = opts['no-include-dev'] ? !opts['no-include-dev'] : !NO_INCLUDE_DEV_DEFAULT;
+  MAX_RETRIES = opts['max-retries'] ? opts['max-retries'] : MAX_RETRIES_DEFAULT;
 
   return opts;
 };
