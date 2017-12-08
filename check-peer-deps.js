@@ -1,16 +1,7 @@
 const { exec } = require('sb-exec');
 const semver = require('semver');
 const commandLineArgs = require('command-line-args');
-const commandLineUsage =  require('command-line-usage');
-
-// Flags
-// Enable debug output
-let DEBUG;
-// Include development packages when checking whether a peerDependency has been
-// satisfied.
-let INCLUDE_DEV;
-// Maximum allowed retries for npm commands
-let MAX_RETRIES;
+const commandLineUsage = require('command-line-usage');
 
 const optionDefinitions = [
   {
@@ -53,13 +44,15 @@ const usageSections = [
   },
 ];
 
+let options;
+
 // Internal vars
 const deps = new Map();
 const npmVers = new Map();
 const peerDeps = new Map();
 
 const log = (value) => {
-  if (DEBUG) {
+  if (options.debug) {
     console.log(value);
   }
 };
@@ -74,7 +67,7 @@ const addDeps = (dependencies) => {
 const npmView = async (name, keys) => {
   const opts = ['view', '--json', name].concat(keys);
   log(`Running 'npm ${opts.join(' ')}'`);
-  let remainingTries = MAX_RETRIES;
+  let remainingTries = options['max-retries'];
   let output;
   do {
     try {
@@ -210,25 +203,11 @@ const checkAllPeerDeps = async () => {
   return Promise.all(promises);
 };
 
-const setOpts = () => {
-  const DEBUG_DEFAULT = false;
-  const NO_INCLUDE_DEV_DEFAULT = false;
-  const MAX_RETRIES_DEFAULT = 2;
-
-  const opts = commandLineArgs(optionDefinitions);
-
-  DEBUG = opts['debug'] ? opts['debug'] : DEBUG_DEFAULT;
-  INCLUDE_DEV = opts['no-include-dev'] ? !opts['no-include-dev'] : !NO_INCLUDE_DEV_DEFAULT;
-  MAX_RETRIES = opts['max-retries'] ? opts['max-retries'] : MAX_RETRIES_DEFAULT;
-
-  return opts;
-};
-
 // Main function
 async function checkPeerDeps() {
-  const opts = setOpts();
+  options = commandLineArgs(optionDefinitions);
 
-  if (opts['help']) {
+  if (options.help) {
     console.log(commandLineUsage(usageSections));
     process.exit(0);
   }
@@ -242,7 +221,7 @@ async function checkPeerDeps() {
   // Get the dependencies to process
   addDeps(packageConfig.dependencies);
 
-  if (INCLUDE_DEV && packageConfig.devDependencies) {
+  if (!options['no-include-dev'] && packageConfig.devDependencies) {
     addDeps(packageConfig.devDependencies);
   }
 
