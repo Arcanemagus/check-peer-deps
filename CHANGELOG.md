@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.1.0](https://github.com/Arcanemagus/check-peer-deps/tree/v1.1.0) (2017-12-09)
+
+[Full Changelog](https://github.com/Arcanemagus/check-peer-deps/compare/v1.0.2...v1.1.0)
+
+**Implemented enhancements:**
+
+- Add arguments controlling the flags [\#2](https://github.com/Arcanemagus/check-peer-deps/issues/2)
+- Add a changelog [\#13](https://github.com/Arcanemagus/check-peer-deps/pull/13) ([Arcanemagus](https://github.com/Arcanemagus))
+- Add arguments controlling the flags [\#12](https://github.com/Arcanemagus/check-peer-deps/pull/12) ([oidualc](https://github.com/oidualc))
+
 ## [v1.0.2](https://github.com/Arcanemagus/check-peer-deps/tree/v1.0.2) (2017-10-18)
 
 [Full Changelog](https://github.com/Arcanemagus/check-peer-deps/compare/v1.0.1...v1.0.2)
