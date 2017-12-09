@@ -1,0 +1,5 @@
+# Remove some files from the released version
+.npmignore
+.gitignore
+.gitattributes
+.github_changelog_generator
