@@ -1,14 +1,50 @@
 const { exec } = require('sb-exec');
 const semver = require('semver');
+const commandLineArgs = require('command-line-args');
+const commandLineUsage = require('command-line-usage');
 
-// Flags
-// Enable debug output
-const DEBUG = false;
-// Include development packages when checking whether a peerDependency has been
-// satisfied.
-const INCLUDE_DEV = true;
-// Maximum allowed retries for npm commands
-const MAX_RETRIES = 2;
+const optionDefinitions = [
+  {
+    name: 'help',
+    description: 'Show this help',
+    type: Boolean,
+    alias: 'h',
+  },
+  {
+    name: 'debug',
+    description: 'Enable debug information',
+    type: Boolean,
+    alias: 'd',
+    defaultValue: false,
+  },
+  {
+    name: 'no-include-dev',
+    description: "Don't include development packages when checking whether a " +
+      'peerDependency has been satisfied',
+    defaultValue: false,
+  },
+  {
+    name: 'max-retries',
+    description: 'Specify how many retries are allowed for [underline]{npm} commands',
+    type: Number,
+    typeLabel: '[underline]{retries}',
+    defaultValue: 2,
+  },
+];
+
+const usageSections = [
+  {
+    header: 'check-peer-deps',
+    content: 'Verifies that the peerDependency requirements of all top level ' +
+      'dependencies are satisfied.',
+  },
+  {
+    header: 'Options',
+    optionList: optionDefinitions,
+  },
+];
+
+let options;
 
 // Internal vars
 const deps = new Map();
@@ -16,7 +52,7 @@ const npmVers = new Map();
 const peerDeps = new Map();
 
 const log = (value) => {
-  if (DEBUG) {
+  if (options.debug) {
     console.log(value);
   }
 };
@@ -31,7 +67,7 @@ const addDeps = (dependencies) => {
 const npmView = async (name, keys) => {
   const opts = ['view', '--json', name].concat(keys);
   log(`Running 'npm ${opts.join(' ')}'`);
-  let remainingTries = MAX_RETRIES;
+  let remainingTries = options['max-retries'];
   let output;
   do {
     try {
@@ -169,6 +205,13 @@ const checkAllPeerDeps = async () => {
 
 // Main function
 async function checkPeerDeps() {
+  options = commandLineArgs(optionDefinitions);
+
+  if (options.help) {
+    console.log(commandLineUsage(usageSections));
+    process.exit(0);
+  }
+
   // eslint-disable-next-line import/no-dynamic-require
   const packageConfig = require(`${process.cwd()}/package.json`);
   if (!packageConfig.dependencies) {
@@ -178,7 +221,7 @@ async function checkPeerDeps() {
   // Get the dependencies to process
   addDeps(packageConfig.dependencies);
 
-  if (INCLUDE_DEV && packageConfig.devDependencies) {
+  if (!options['no-include-dev'] && packageConfig.devDependencies) {
     addDeps(packageConfig.devDependencies);
   }
 
