@@ -4,10 +4,10 @@ are satisfied.
 
 ## Installation
 
-You can install this on your system with a simple:
+You can install this on your system with:
 
 ```sh
-npx check-peer-deps
+npm i -g check-peer-deps
 ```
 
 Please note that this utility requires `npm` to be available.
