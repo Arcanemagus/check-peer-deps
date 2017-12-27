@@ -1,5 +1,7 @@
 # Remove some files from the released version
 __tests__/*
+.circleci/*
+coverage/*
 .npmignore
 .gitignore
 .gitattributes
