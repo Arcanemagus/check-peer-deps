@@ -1,4 +1,5 @@
 # Remove some files from the released version
+__tests__/*
 .npmignore
 .gitignore
 .gitattributes
