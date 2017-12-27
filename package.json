@@ -23,6 +23,9 @@
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "dependencies": {
     "command-line-args": "^4.0.7",
     "command-line-usage": "^4.0.2",
