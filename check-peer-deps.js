@@ -1,7 +1,10 @@
-const { exec } = require('sb-exec');
+const { exec: execCP } = require('child_process');
+const { promisify } = require('util');
 const semver = require('semver');
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
+
+const exec = promisify(execCP);
 
 const optionDefinitions = [
   {
@@ -66,21 +69,22 @@ const addDeps = (dependencies) => {
 
 const npmView = async (name, keys) => {
   const opts = ['view', '--json', name].concat(keys);
-  log(`Running 'npm ${opts.join(' ')}'`);
+  const command = ['npm'].concat(opts).join(' ');
+  log(`Running '${command}'`);
   let remainingTries = options['max-retries'];
   let output;
   do {
     try {
       // eslint-disable-next-line no-await-in-loop
-      output = await exec('npm', opts);
+      ({ stdout: output } = await exec(command));
     } catch (e) {
-      log(`'npm ${opts.join(' ')}' failed, retrying...`);
+      log(`'${command}' failed with error ${e}, retrying...`);
       // Do nothing when it fails...
     }
     remainingTries -= 1;
   } while (remainingTries > 0 && !output);
   if (!output) {
-    console.error(`To many retries of 'npm ${opts.join(' ')}' without success, exiting!`);
+    console.error(`To many retries of '${command}' without success, exiting!`);
     process.exit(1);
   }
   return JSON.parse(output);
