@@ -226,15 +226,7 @@ const checkAllPeerDeps = async () => {
   return Promise.all(promises);
 };
 
-// Main function
-async function checkPeerDeps() {
-  options = commandLineArgs(optionDefinitions);
-
-  if (options.help) {
-    console.log(commandLineUsage(usageSections));
-    process.exit(0);
-  }
-
+const findDependencies = async () => {
   const packageConfig = await readPackageConfig(`${options.directory}/package.json`);
 
   // Get the dependencies to process
@@ -243,33 +235,50 @@ async function checkPeerDeps() {
   if (!options['no-include-dev'] && packageConfig.devDependencies) {
     addDeps(packageConfig.devDependencies);
   }
+};
 
-  if (deps.size < 1) {
-    console.error('No dependencies in the current package!');
-    process.exit(0);
+// Main function
+async function checkPeerDeps() {
+  let shouldExit = false;
+  options = commandLineArgs(optionDefinitions);
+
+  if (options.help) {
+    console.log(commandLineUsage(usageSections));
+    shouldExit = true;
   }
 
-  log('Dependencies:');
-  deps.forEach((range, name) => { log(`${name}: ${range}`); });
+  if (!shouldExit) {
+    await findDependencies();
 
-  log('');
+    if (deps.size < 1) {
+      console.error('No dependencies in the current package!');
+      shouldExit = true;
+    }
+  }
 
-  log('Determining peerDependencies...');
-  await getPeerDeps();
-  log('Done.');
+  if (!shouldExit) {
+    log('Dependencies:');
+    deps.forEach((range, name) => { log(`${name}: ${range}`); });
 
-  log('');
+    log('');
 
-  // Get the NPM versions required to check the peerDependencies
-  log('Determining peerDependency version ranges from NPM...');
-  await getNpmVersions();
-  log('Done.');
+    log('Determining peerDependencies...');
+    await getPeerDeps();
+    log('Done.');
 
-  log('');
+    log('');
 
-  log('Checking versions...');
-  await checkAllPeerDeps();
-  log('Done.');
+    // Get the NPM versions required to check the peerDependencies
+    log('Determining peerDependency version ranges from NPM...');
+    await getNpmVersions();
+    log('Done.');
+
+    log('');
+
+    log('Checking versions...');
+    await checkAllPeerDeps();
+    log('Done.');
+  }
 }
 
 module.exports = checkPeerDeps;
