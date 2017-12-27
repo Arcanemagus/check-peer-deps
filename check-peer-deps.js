@@ -1,10 +1,12 @@
 const { exec: execCP } = require('child_process');
 const { promisify } = require('util');
+const { readFile: readFileFS } = require('fs');
 const semver = require('semver');
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 
 const exec = promisify(execCP);
+const readFile = promisify(readFileFS);
 
 const optionDefinitions = [
   {
@@ -32,6 +34,14 @@ const optionDefinitions = [
     type: Number,
     typeLabel: '[underline]{retries}',
     defaultValue: 2,
+  },
+  {
+    name: 'directory',
+    description: 'The directory to check peerDependencies within. Defaults ' +
+      'to the current directory.',
+    type: String,
+    typeLabel: '[underline]{directory}',
+    defaultValue: process.cwd(),
   },
 ];
 
@@ -61,10 +71,24 @@ const log = (value) => {
 };
 
 const addDeps = (dependencies) => {
+  if (!dependencies) {
+    return;
+  }
   Object.entries(dependencies).forEach((entry) => {
     const [name, range] = entry;
     deps.set(name, range);
   });
+};
+
+const readPackageConfig = async (path) => {
+  let packageConfig = {};
+  try {
+    const contents = await readFile(path, { encoding: 'utf8' });
+    packageConfig = JSON.parse(contents);
+  } catch (e) {
+    console.error(e.message);
+  }
+  return packageConfig;
 };
 
 const npmView = async (name, keys) => {
@@ -140,14 +164,9 @@ const getNpmPeerDep = async (range, name) => {
 
 const getPeerDep = async (range, name) => {
   log(`Getting peerDependencies for ${name}`);
-  let packageInfo;
-  try {
-    // Hacktown, USA.
-    // eslint-disable-next-line import/no-dynamic-require
-    packageInfo = require(`${process.cwd()}/node_modules/${name}/package.json`);
-  } catch (e) {
-    return;
-  }
+  // Hacktown, USA.
+  const packagePath = `${options.directory}/node_modules/${name}/package.json`;
+  const packageInfo = await readPackageConfig(packagePath);
   if (!packageInfo.peerDependencies) {
     return;
   }
@@ -216,17 +235,18 @@ async function checkPeerDeps() {
     process.exit(0);
   }
 
-  // eslint-disable-next-line import/no-dynamic-require
-  const packageConfig = require(`${process.cwd()}/package.json`);
-  if (!packageConfig.dependencies) {
-    console.error('No dependencies in the current pacakge!');
-  }
+  const packageConfig = await readPackageConfig(`${options.directory}/package.json`);
 
   // Get the dependencies to process
   addDeps(packageConfig.dependencies);
 
   if (!options['no-include-dev'] && packageConfig.devDependencies) {
     addDeps(packageConfig.devDependencies);
+  }
+
+  if (deps.size < 1) {
+    console.error('No dependencies in the current package!');
+    process.exit(0);
   }
 
   log('Dependencies:');
