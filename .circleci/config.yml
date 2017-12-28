@@ -26,7 +26,18 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
+      # Print some information
+      - run: node --version
+      - run: npm --version
+
+      # Install greenkeeper-lockfile
+      - run: sudo npm install -g greenkeeper-lockfile@latest
+
+      # Install the dependencies
       - run: npm install
+
+      # Update the lockfile with greenkeeper
+      - run: greenkeeper-lockfile-update
 
       - save_cache:
           paths:
@@ -35,3 +46,6 @@ jobs:
 
       # run tests!
       - run: npm test
+
+      # Upload the lockfile
+      - run: greenkeeper-lockfile-upload
