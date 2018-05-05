@@ -21,7 +21,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "commitmsg": "commitlint -e $GIT_PARAMS"
   },
   "jest": {
     "coveragePathIgnorePatterns": [
@@ -42,10 +43,15 @@
     "semver": "^5.4.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^6.2.0",
+    "@commitlint/config-conventional": "^6.1.3",
+    "@commitlint/travis-cli": "^6.2.0",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.7.0",
-    "jest": "^22.0.4"
+    "husky": "^0.14.3",
+    "jest": "^22.0.4",
+    "semantic-release": "^15.2.0"
   },
   "eslintConfig": {
     "extends": "airbnb-base",
@@ -56,5 +62,10 @@
     "env": {
       "node": true
     }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
