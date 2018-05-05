@@ -3,6 +3,7 @@ __tests__/*
 .circleci/*
 coverage/*
 .npmignore
+.travis.yml
 .gitignore
 .gitattributes
 .github_changelog_generator
