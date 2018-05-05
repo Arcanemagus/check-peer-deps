@@ -24,7 +24,7 @@ jobs:
         provider: script
         skip_cleanup: true
         script:
-          - echo "npx semantic-release"
+          - npx semantic-release
 
 notifications:
   email:

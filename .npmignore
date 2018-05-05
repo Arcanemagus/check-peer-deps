@@ -2,8 +2,8 @@
 __tests__/*
 .circleci/*
 coverage/*
+.gitattributes
+.gitignore
 .npmignore
 .travis.yml
-.gitignore
-.gitattributes
-.github_changelog_generator
+git_deploy_key.enc
