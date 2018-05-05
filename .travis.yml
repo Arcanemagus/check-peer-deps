@@ -8,6 +8,11 @@ jobs:
     - stage: test
       node_js: node
 
+    # Check the commit messages
+    - stage: test
+      script:
+        - commitlint-travis
+
     - stage: release
       before_deploy:
         # Decrypt the git_deploy_key.enc key into /tmp/git_deploy_key
