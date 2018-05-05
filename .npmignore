@@ -6,4 +6,3 @@ coverage/*
 .gitignore
 .npmignore
 .travis.yml
-git_deploy_key.enc
