@@ -29,6 +29,11 @@ const optionDefinitions = [
     defaultValue: false,
   },
   {
+    name: 'include-resolutions',
+    description: 'Check for resolutions section of package.json when checking whether a peerDependency has been satisfied',
+    defaultValue: false,
+  },
+  {
     name: 'max-retries',
     description: 'Specify how many retries are allowed for [underline]{npm} commands',
     type: Number,
@@ -63,6 +68,7 @@ let options;
 const deps = new Map();
 const npmVers = new Map();
 const peerDeps = new Map();
+const resolutions = new Map();
 
 const log = (value) => {
   if (options.debug) {
@@ -77,6 +83,16 @@ const addDeps = (dependencies) => {
   Object.entries(dependencies).forEach((entry) => {
     const [name, range] = entry;
     deps.set(name, range);
+  });
+};
+
+const addResolutions = (res) => {
+  if (!res) {
+    return;
+  }
+  Object.entries(res).forEach((entry) => {
+    const [name, range] = entry;
+    resolutions.set(name, range);
   });
 };
 
@@ -206,6 +222,13 @@ const checkPeerDependencies = async (peerDependencies, name) =>
       }
     }
 
+    if (resolutions.has(`${name}/${peerDepName}`)) {
+      const minAllowedVer = resolutions.get(`${name}/${peerDepName}`);
+      if (semver.satisfies(minAllowedVer, peerDepRange)) {
+        found = true;
+      }
+    }
+
     if (!found) {
       console.error(`A dependency satisfying ${name}'s peerDependency of '${peerDepName}@${peerDepRange}' was not found!`);
 
@@ -231,6 +254,10 @@ const findDependencies = async () => {
 
   // Get the dependencies to process
   addDeps(packageConfig.dependencies);
+
+  if (options['include-resolutions'] && packageConfig.resolutions) {
+    addResolutions(packageConfig.resolutions);
+  }
 
   if (!options['no-include-dev'] && packageConfig.devDependencies) {
     addDeps(packageConfig.devDependencies);
