@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "eslint": "4.9.0",
+    "eslint-config-airbnb-base": "12.1.0"
+  },
+  "resolutions": {
+    "eslint-config-airbnb-base/eslint": "4.0.9"
+  }
+}

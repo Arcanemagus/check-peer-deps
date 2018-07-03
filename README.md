@@ -41,3 +41,13 @@ allowing a potential issue to arise if `eslint@4.6.0` was installed and not
 updated before installing. The output also tells you that although the
 _minimum_ allowed version is too low, the _maximum_ allowed version does
 satisfy the `peerDependencies` requirement.
+
+
+If you use resolutions section in your package.json file in order to resolve some unmet peer dependencies
+and want the program to take it into the account run it with include-resolutions option:
+
+```
+> check-peer-deps --include-resolutions=true
+```
+
+Read more about resolutions: https://yarnpkg.com/lang/en/docs/selective-version-resolutions/
