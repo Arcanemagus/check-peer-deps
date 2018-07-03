@@ -1,3 +1,11 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/Arcanemagus/check-peer-deps/compare/v1.1.3...v1.2.0) (2018-07-03)
+
+
+### Features
+
+* **resolutions:** yarn resolutions support added ([5ba6839](https://github.com/Arcanemagus/check-peer-deps/commit/5ba6839))
+
 # Change Log
 
 ## [v1.1.3](https://github.com/Arcanemagus/check-peer-deps/tree/v1.1.3) (2018-05-05)
