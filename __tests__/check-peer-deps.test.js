@@ -40,3 +40,10 @@ test('Finds nothing wrong with no peerDependencies in the tree', async () => {
   expect(output.stdout).toBe('');
   expect(output.stderr).toBe('');
 });
+
+test('Finds nothing wrong with a broken dependency tree backed up with resolutions', async () => {
+  expect.assertions(2);
+  const output = await runCPD(['--include-resolutions=true'], { cwd: path.join(fixtures, 'peerDepWithResolution') });
+  expect(output.stdout).toBe('');
+  expect(output.stderr).toBe('');
+});
