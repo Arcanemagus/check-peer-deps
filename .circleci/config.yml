@@ -23,6 +23,9 @@ jobs:
       # Install the dependencies
       - run: npm install
 
+      # Lint the code
+      - run: npm run lint
+
       # run tests!
       - run: npm test
 

@@ -4,6 +4,7 @@ __tests__/*
 coverage/*
 .gitattributes
 .gitignore
+.eslintignore
 .npmignore
 .travis.yml
 CHANGELOG.md
