@@ -24,8 +24,8 @@ const optionDefinitions = [
   },
   {
     name: 'no-include-dev',
-    description: "Don't include development packages when checking whether a " +
-      'peerDependency has been satisfied',
+    description: "Don't include development packages when checking whether a "
+      + 'peerDependency has been satisfied',
     defaultValue: false,
   },
   {
@@ -42,8 +42,8 @@ const optionDefinitions = [
   },
   {
     name: 'directory',
-    description: 'The directory to check peerDependencies within. Defaults ' +
-      'to the current directory.',
+    description: 'The directory to check peerDependencies within. Defaults '
+      + 'to the current directory.',
     type: String,
     typeLabel: '[underline]{directory}',
     defaultValue: process.cwd(),
@@ -53,8 +53,8 @@ const optionDefinitions = [
 const usageSections = [
   {
     header: 'check-peer-deps',
-    content: 'Verifies that the peerDependency requirements of all top level ' +
-      'dependencies are satisfied.',
+    content: 'Verifies that the peerDependency requirements of all top level '
+      + 'dependencies are satisfied.',
   },
   {
     header: 'Options',
@@ -209,7 +209,7 @@ const getPeerDeps = async () => {
 };
 
 // peerDependencies checks
-const checkPeerDependencies = async (peerDependencies, name) =>
+const checkPeerDependencies = async (peerDependencies, name) => {
   Promise.all(Array.from(peerDependencies.entries()).map(async (entry) => {
     const [peerDepName, peerDepRange] = entry;
     log(`Checking ${name}'s peerDependency of '${peerDepName}@${peerDepRange}'`);
@@ -240,6 +240,7 @@ const checkPeerDependencies = async (peerDependencies, name) =>
       }
     }
   }));
+};
 
 const checkAllPeerDeps = async () => {
   const promises = [];
