@@ -1,18 +1,8 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/node:8
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
 
     working_directory: ~/repo
 
@@ -30,22 +20,13 @@ jobs:
       - run: node --version
       - run: npm --version
 
-      # Install greenkeeper-lockfile
-      - run: sudo npm install -g greenkeeper-lockfile@latest
-
       # Install the dependencies
       - run: npm install
 
-      # Update the lockfile with greenkeeper
-      - run: greenkeeper-lockfile-update
+      # run tests!
+      - run: npm test
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: npm test
-
-      # Upload the lockfile
-      - run: greenkeeper-lockfile-upload
