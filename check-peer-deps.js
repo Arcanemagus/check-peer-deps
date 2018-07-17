@@ -209,9 +209,8 @@ const getPeerDeps = async () => {
 };
 
 // peerDependencies checks
-const checkPeerDependencies = async (peerDependencies, name) => {
-  Promise.all(Array.from(peerDependencies.entries()).map(async (entry) => {
-    const [peerDepName, peerDepRange] = entry;
+const checkPeerDependencies = (peerDependencies, name) => {
+  peerDependencies.forEach((peerDepRange, peerDepName) => {
     log(`Checking ${name}'s peerDependency of '${peerDepName}@${peerDepRange}'`);
     let found = false;
     if (deps.has(peerDepName)) {
@@ -239,15 +238,11 @@ const checkPeerDependencies = async (peerDependencies, name) => {
         console.log(`Package dependencies can satisfy the peerDependency? ${maxUsable ? 'Yes' : 'No'}`);
       }
     }
-  }));
+  });
 };
 
-const checkAllPeerDeps = async () => {
-  const promises = [];
-  peerDeps.forEach((peerDependencies, name) => {
-    promises.push(checkPeerDependencies(peerDependencies, name));
-  });
-  return Promise.all(promises);
+const checkAllPeerDeps = () => {
+  peerDeps.forEach(checkPeerDependencies);
 };
 
 const findDependencies = async () => {
@@ -304,7 +299,7 @@ async function checkPeerDeps() {
     log('');
 
     log('Checking versions...');
-    await checkAllPeerDeps();
+    checkAllPeerDeps();
     log('Done.');
   }
 }
