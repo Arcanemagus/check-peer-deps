@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/Arcanemagus/check-peer-deps/compare/v1.2.1...v1.2.2) (2019-03-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency semver to v6 ([a473477](https://github.com/Arcanemagus/check-peer-deps/commit/a473477))
+
 ## [1.2.1](https://github.com/Arcanemagus/check-peer-deps/compare/v1.2.0...v1.2.1) (2018-07-17)
 
 
