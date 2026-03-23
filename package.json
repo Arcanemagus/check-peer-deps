@@ -38,7 +38,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "command-line-args": "^5.0.2",
+    "command-line-args": "^6.0.0",
     "command-line-usage": "^5.0.4",
     "semver": "^6.0.0"
   },
